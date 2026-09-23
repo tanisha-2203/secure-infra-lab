@@ -57,15 +57,22 @@ resource "aws_iam_role" "app" {
   })
 }
 
-resource "aws_iam_role_policy" "app_admin" {
-  name = "lab-app-admin-everything"
+resource "aws_iam_role_policy" "app_s3_access" {
+  name = "lab-app-s3-access"
   role = aws_iam_role.app.id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = "*"
-      Resource = "*"
-    }]
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject"]
+        Resource = "${aws_s3_bucket.payments_data.arn}/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = aws_s3_bucket.payments_data.arn
+      }
+    ]
   })
 }
